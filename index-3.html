@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title></title>
+</head>
+
+<body>
+    <canvas id="myCanvas" width="100" height="100" style="border:1px solid #d3d3d3;">
+		<script>
+			/*
+			Bresenham
+				0 - Av. Axis ­ 		(0,	 0); (50, 0) :110 	=> yellow
+				1 - Av. Awesome ­ 	(0,  20);(50, 20):60	=> blue
+				2 - Av. Love ­ 		(0,  50);(50, 50):80	=> gray
+				3 - Av. Slow ­ 		(0,  80);(50, 80):30	=> orange
+				4 - St. Oh ­ 		(0,  0); (0,  80):90	=> brown
+				5 - St. One ­ 		(15, 0); (15, 80):40	=> silver
+				6 - St. Two ­ 		(30, 0); (30, 80):50	=> pink
+				7 - St. Three ­ 	    (45, 0); (45, 80):40	=> purple
+				8 - St. Four ­ 		(50, 0); (50, 80):50	=> green
+			*/
+			var cordenadas = [
+				{
+					cor: "yellow",
+					rua: "Av. Axis",
+					inicio: {x:0,y:0},
+					fim: {x:50,y:10},
+					velocidade: 110
+				},
+				{
+					cor: "blue",
+					rua: "Av. Awesome",
+					inicio: {x:0,y:20},
+					fim: {x:50,y:20},
+					velocidade: 60
+				},
+				{
+					cor: "gray",
+					rua: "Av. Love",
+					inicio: {x:0,y:50},
+					fim: {x:50,y:50},
+					velocidade: 80
+				},
+				{
+					cor: "orange",
+					rua: "Av. Slow",
+					inicio: {x:0,y:80},
+					fim: {x:50,y:80},
+					velocidade: 30
+				},
+				{
+					cor: "brown",
+					rua: "St. Oh",
+					inicio: {x:0,y:0},
+					fim: {x:0,y:80},
+					velocidade: 90
+				},
+				{
+					cor: "silver",
+					rua: "St. One",
+					inicio: {x:15,y:0},
+					fim: {x:15,y:80},
+					velocidade: 40
+				},
+				{
+					cor: "pink",
+					rua: "St. Two",
+					inicio: {x:30,y:0},
+					fim: {x:30,y:80},
+					velocidade: 30
+				},
+				{
+					cor: "purple",
+					rua: "St. Three",
+					inicio: {x:45,y:0},
+					fim: {x:45,y:80},
+					velocidade: 40
+				},
+				{
+					cor: "green",
+					rua: "St. Four",
+					inicio: {x:50,y:0},
+					fim: {x:50,y:0},
+					velocidade: 50
+				},];
+			var map = [];
+			var c = document.getElementById("myCanvas");
+			var ctx = c.getContext("2d");
+			var x = 0,y = 0, limitedLoop = 0, setInt;
+			var draw = function() {
+				for (let a = 0; a < cordenadas.length; a++) {
+					let d = cordenadas[a];
+					if(a == 0 ) {
+						debugger;
+						ctx.fillStyle=d.cor;
+						ctx.fillRect(x,y,1,1);
+						let dx = Math.abs(d.fim.x - d.inicio.x);
+						let dy = Math.abs(d.fim.y - d.inicio.y);
+						let p = 2 * dy - dx;
+						if(d.inicio.x > d.fim.x) {
+							x = d.fim.x;
+							y = d.fim.y;							
+							// d.fim.x = d.inicio.x;
+						} else {
+							x = d.inicio.x;
+							y = d.inicio.y;
+						}
+						if(x < d.fim.x){
+							x++;
+							if(p<0)
+								p += 2 * dy;
+							else{
+								y++;
+								p += 2*(dy-dx);
+							}  
+						}
+					}
+					
+				}
+				// ctx.fillStyle=d.cor;
+				/*if(x <= c.width )
+					x++;
+				if(x == c.width) {
+					x = 0;
+					y++;
+				}*/
+				/*if(d.inicio.x != d.fim.x) {
+					x++;
+					y++;
+				}*/
+				/*y++;*/
+				if(limitedLoop == 100)
+					clearInterval(setInt);
+				limitedLoop++;
+			}
+			setInt = setInterval(draw, 2);
+
+		</script>
+	</body>
+</html>

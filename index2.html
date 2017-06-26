@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title></title>
+</head>
+
+<body>
+    <canvas id="myCanvas" width="100" height="100" style="border:1px solid #d3d3d3;">
+		<script>
+			/*
+				0 - Av. Axis ­ 		(0,	 0); (50, 0) :110 	=> yellow
+				1 - Av. Awesome ­ 	(0,  20);(50, 20):60	=> blue
+				2 - Av. Love ­ 		(0,  50);(50, 50):80	=> gray
+				3 - Av. Slow ­ 		(0,  80);(50, 80):30	=> orange
+				4 - St. Oh ­ 		(0,  0); (0,  80):90	=> brown
+				5 - St. One ­ 		(15, 0); (15, 80):40	=> silver
+				6 - St. Two ­ 		(30, 0); (30, 80):50	=> pink
+				7 - St. Three ­ 	    (45, 0); (45, 80):40	=> purple
+				8 - St. Four ­ 		(50, 0); (50, 80):50	=> green
+			*/
+			var cordenadas = [
+				{
+					cor: "yellow",
+					rua: "Av. Axis",
+					inicio: {x:0,y:0},
+					fim: {x:50,y:10},
+					velocidade: 110
+				},
+				{
+					cor: "blue",
+					rua: "Av. Awesome",
+					inicio: {x:0,y:20},
+					fim: {x:50,y:20},
+					velocidade: 60
+				},
+				{
+					cor: "gray",
+					rua: "Av. Love",
+					inicio: {x:0,y:50},
+					fim: {x:50,y:50},
+					velocidade: 80
+				},
+				{
+					cor: "orange",
+					rua: "Av. Slow",
+					inicio: {x:0,y:80},
+					fim: {x:50,y:80},
+					velocidade: 30
+				},
+				{
+					cor: "brown",
+					rua: "St. Oh",
+					inicio: {x:0,y:0},
+					fim: {x:0,y:80},
+					velocidade: 90
+				},
+				{
+					cor: "silver",
+					rua: "St. One",
+					inicio: {x:15,y:0},
+					fim: {x:15,y:80},
+					velocidade: 40
+				},
+				{
+					cor: "pink",
+					rua: "St. Two",
+					inicio: {x:30,y:0},
+					fim: {x:30,y:80},
+					velocidade: 30
+				},
+				{
+					cor: "purple",
+					rua: "St. Three",
+					inicio: {x:45,y:0},
+					fim: {x:45,y:80},
+					velocidade: 40
+				},
+				{
+					cor: "green",
+					rua: "St. Four",
+					inicio: {x:50,y:0},
+					fim: {x:50,y:0},
+					velocidade: 50
+				},];
+			var map = [];
+			var c = document.getElementById("myCanvas");
+			var ctx = c.getContext("2d");
+
+			/*for (let cord = 0; cord < cordenadas.length; cord++) {
+				let d = cordenadas[cord];
+				
+				ctx.moveTo(d.inicio.x , d.inicio.y);
+				ctx.lineTo(d.fim.x , d.fim.y);
+			}*/
+			for (let x = 0; x < c.width; x++) {
+				for (let y = 0; y < c.height; y++) {
+					for (let cord = 0; cord < cordenadas.length; cord++) {
+						let d = cordenadas[cord];
+	  					ctx.font = '6px serif';
+
+
+						/*if(d.inicio.x == x && d.inicio.y == y) {
+							ctx.moveTo(d.inicio.x , d.inicio.y);
+						}
+						if(d.fim.x == x && d.fim.y == y) {
+							ctx.lineTo(d.fim.x , d.fim.y);
+						}*/
+						/*if(((d.inicio.x < x && d.inicio.x+2 > x) || (d.inicio.y < y && d.inicio.y+2 > y)) ||
+						   ((d.fim.x < x && d.fim.x+2 > x) || (d.fim.y < y && d.fim.y+2 > y))) {
+	  						// map[cord][] = new Array({x: x, y: y})
+							ctx.fillStyle=d.cor;
+							ctx.fillRect(x,y,2,2);
+						}*/
+
+						
+
+						if(d.inicio.x < x && d.fim.x > x && d.inicio.y < y && d.fim.y+2 > y) {
+	  						map[cord] = new Array({x: x, y: y})
+							ctx.fillStyle=d.cor;
+							ctx.fillRect(x,y,2,2);
+						}
+
+						if(d.inicio.x <= x && d.inicio.x+1 >= x && d.fim.x < x && d.fim.x+2 > x && d.fim.y >= y) {
+							ctx.fillStyle=d.cor;
+							ctx.fillRect(x,y,2,2);
+						}
+							
+						/*if(d.inicio.x == x && d.inicio.y == y) {
+							ctx.fillStyle="black";
+							ctx.fillText("i",x,y + 5);
+							ctx.fillStyle="red";
+							ctx.fillRect(x,y,2,2);
+						}
+						if(d.fim.x == x && d.fim.y == y) {
+							ctx.fillStyle="black";
+							ctx.fillText("f",x + 2,y + 5);
+							ctx.fillStyle="red";
+							ctx.fillRect(x,y,2,2);
+						}*/
+					}
+					/*if(x%20 == 0 && (c.height+40)/2 == y && x <= c.width/2 && y >= c.height/2) {
+						if(c.width/4 < x + 100 && c.width/4 > x + 100) {
+	  						ctx.font = '8px serif';
+							ctx.fillText(xn,x,y);
+						}
+
+        				// ctx.fillRect(x, y, 2, 10);
+					}
+					xn--;*/
+				}
+			}
+
+			ctx.stroke();
+			/*for (let x = 0; x < c.width; x++) {
+				if(x%20 == 0)
+        			ctx.fillRect(x, (c.height+10)/2, 2, 10);
+        		ctx.fillRect(x, c.height/2, 2, 2);
+			}
+			for (let y = 0; y < c.height; y++) {
+				if(y%20 == 0)
+        			ctx.fillRect((c.height+10)/2, y, 10, 2);		
+        		ctx.fillRect(c.width/2, y, 2, 2);
+        	}*/
+		</script>
+	</body>
+</html>
