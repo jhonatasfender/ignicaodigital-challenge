@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title></title>
+</head>
+
+<body>
+    <canvas id="myCanvas" width="100" height="100" style="border:1px solid #d3d3d3;"></canvas>
+    <br>
+    <select id="inicio">
+    	<option>Inicio</option>
+    </select>
+    <select id="fim">
+    	<option>Fim</option>
+    </select>
+    <br>
+    <input type="button" id="start" value="start">
+    <script>
+        /*
+        				0 - Av. Axis ­ 		(0,	 0); (50, 0) :110 	=> yellow
+        				1 - Av. Awesome ­ 	(0,  20);(50, 20):60	=> blue
+        				2 - Av. Love ­ 		(0,  50);(50, 50):80	=> gray
+        				3 - Av. Slow ­ 		(0,  80);(50, 80):30	=> orange
+        				4 - St. Oh ­ 		(0,  0); (0,  80):90	=> brown
+        				5 - St. One ­ 		(15, 0); (15, 80):40	=> silver
+        				6 - St. Two ­ 		(30, 0); (30, 80):50	=> pink
+        				7 - St. Three ­ 	(45, 0); (45, 80):40	=> purple
+        				8 - St. Four ­ 		(50, 0); (50, 80):50	=> green
+        			*/
+        var cordenadas = [
+        	{
+                cor: "yellow",
+                rua: "Av. Axis",
+                inicio: {
+                    x: 0,
+                    y: 0
+                },
+                fim: {
+                    x: 50,
+                    y: 0
+                },
+                velocidade: 110
+            },
+            {
+                cor: "blue",
+                rua: "Av. Awesome",
+                inicio: {
+                    x: 0,
+                    y: 20
+                },
+                fim: {
+                    x: 50,
+                    y: 20
+                },
+                velocidade: 60
+            },
+            {
+                cor: "gray",
+                rua: "Av. Love",
+                inicio: {
+                    x: 0,
+                    y: 50
+                },
+                fim: {
+                    x: 50,
+                    y: 50
+                },
+                velocidade: 80
+            },
+            {
+                cor: "orange",
+                rua: "Av. Slow",
+                inicio: {
+                    x: 0,
+                    y: 80
+                },
+                fim: {
+                    x: 50,
+                    y: 80
+                },
+                velocidade: 30
+            },
+            {
+                cor: "brown",
+                rua: "St. Oh",
+                inicio: {
+                    x: 0,
+                    y: 0
+                },
+                fim: {
+                    x: 0,
+                    y: 80
+                },
+                velocidade: 90
+            },
+            {
+                cor: "silver",
+                rua: "St. One",
+                inicio: {
+                    x: 15,
+                    y: 0
+                },
+                fim: {
+                    x: 15,
+                    y: 80
+                },
+                velocidade: 40
+            },
+            {
+                cor: "pink",
+                rua: "St. Two",
+                inicio: {
+                    x: 30,
+                    y: 0
+                },
+                fim: {
+                    x: 30,
+                    y: 80
+                },
+                velocidade: 30
+            },
+            {
+                cor: "purple",
+                rua: "St. Three",
+                inicio: {
+                    x: 45,
+                    y: 0
+                },
+                fim: {
+                    x: 45,
+                    y: 80
+                },
+                velocidade: 40
+            },
+            {
+                cor: "green",
+                rua: "St. Four",
+                inicio: {
+                    x: 50,
+                    y: 0
+                },
+                fim: {
+                    x: 50,
+                    y: 0
+                },
+                velocidade: 50
+            },
+        ];
+        var _map = [];
+        var c = document.getElementById("myCanvas");
+        var ctx = c.getContext("2d");
+        var x = 0,
+            y = 0,
+            limitedLoop = 0,
+            setInt, _map = new Array(),
+            a, point = [];
+        var createMap = function() {
+            if (_map[a] == undefined) {
+                _map[a] = new Array();
+            }
+        }
+        var Graph = (function(undefined) {
+
+            var extractKeys = function(obj) {
+                var keys = [],
+                    key;
+                for (key in obj) {
+                    Object.prototype.hasOwnProperty.call(obj, key) && keys.push(key);
+                }
+                return keys;
+            }
+
+            var sorter = function(a, b) {
+                return parseFloat(a) - parseFloat(b);
+            }
+
+            var findPaths = function(map, start, end, infinity) {
+                infinity = infinity || Infinity;
+
+                var costs = {},
+                    open = {
+                        '0': [start]
+                    },
+                    predecessors = {},
+                    keys;
+
+                var addToOpen = function(cost, vertex) {
+                    var key = "" + cost;
+                    if (!open[key]) open[key] = [];
+                    open[key].push(vertex);
+                }
+
+                costs[start] = 0;
+
+                while (open) {
+                    if (!(keys = extractKeys(open)).length) break;
+
+                    keys.sort(sorter);
+
+                    var key = keys[0],
+                        bucket = open[key],
+                        node = bucket.shift(),
+                        currentCost = parseFloat(key),
+                        adjacentNodes = map[node] || {};
+
+                    if (!bucket.length) delete open[key];
+
+                    for (var vertex in adjacentNodes.distancia) {
+                    	console.log(vertex.length);
+                        if (Object.prototype.hasOwnProperty.call(adjacentNodes.distancia, vertex)) {
+                            var cost = adjacentNodes[parseFloat(vertex)].distancia[parseFloat(vertex)],
+                                totalCost = cost + currentCost,
+                                vertexCost = costs[parseFloat(vertex)];
+
+                            if ((vertexCost === undefined) || (vertexCost > totalCost)) {
+                                costs[vertex] = totalCost;
+                                addToOpen(totalCost, vertex);
+                                predecessors[vertex] = node;
+                            }
+                        }
+                    }
+                }
+
+                if (costs[end] === undefined) {
+                    return null;
+                } else {
+                    return predecessors;
+                }
+
+            }
+
+            var extractShortest = function(predecessors, end) {
+                var nodes = [],
+                    u = end;
+
+                while (u !== undefined) {
+                    nodes.push(u);
+                    u = predecessors[u];
+                }
+
+                nodes.reverse();
+                return nodes;
+            }
+
+            var findShortestPath = function(map, nodes) {
+                var start = nodes.shift(),
+                    end,
+                    predecessors,
+                    path = [],
+                    shortest;
+
+                while (nodes.length) {
+                    end = nodes.shift();
+                    predecessors = findPaths(map, start, end);
+
+                    if (predecessors) {
+                        shortest = extractShortest(predecessors, end);
+                        if (nodes.length) {
+                            path.push.apply(path, shortest.slice(0, -1));
+                        } else {
+                            return path.concat(shortest);
+                        }
+                    } else {
+                        return null;
+                    }
+
+                    start = end;
+                }
+            }
+
+            var toArray = function(list, offset) {
+                try {
+                    return Array.prototype.slice.call(list, offset);
+                } catch (e) {
+                    var a = [];
+                    for (var i = offset || 0, l = list.length; i < l; ++i) {
+                        a.push(list[i]);
+                    }
+                    return a;
+                }
+            }
+
+            var Graph = function(map) {
+                this.map = map;
+            }
+
+            Graph.prototype.findShortestPath = function(start, end) {
+                if (Object.prototype.toString.call(start) === '[object Array]') {
+                    return findShortestPath(this.map, start);
+                } else if (arguments.length === 2) {
+                    return findShortestPath(this.map, [start, end]);
+                } else {
+                    return findShortestPath(this.map, toArray(arguments));
+                }
+            }
+
+            Graph.findShortestPath = function(map, start, end) {
+                if (Object.prototype.toString.call(start) === '[object Array]') {
+                    return findShortestPath(map, start);
+                } else if (arguments.length === 3) {
+                    return findShortestPath(map, [start, end]);
+                } else {
+                    return findShortestPath(map, toArray(arguments, 1));
+                }
+            }
+
+            return Graph;
+
+        })();
+        var ini = document.getElementById("inicio"),
+            fim = document.getElementById("fim"),
+            start = document.getElementById("start");
+        var like = function(loop) {
+            let dist = 0, m = [];
+            for (let i = 0; i < _map.length; i++) {
+                let h = _map[i];
+                for (let j = 0; j < h.length; j++) {
+                    let g = h[j];
+                    dist++;
+                    for (let b = 0; b < _map.length; b++) {
+                        let c = _map[b];
+                        for (let e = 0; e < c.length; e++) {
+                            let f = c[e];
+                            // console.log(i,g,b,f);
+                            if (g.x == f.x && g.y == f.y && i != b) {
+                                ctx.fillStyle = "black";
+                                // ctx.fillRect(g.x-1,g.y-1,2,2);
+                                _map[i][j].esquina = true;
+                                // _map[i][j].distancia = dist;
+                                dist = 0;
+                                point.push(_map[i][j]);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        var createOptionElement = function(e) {
+            for (let i = 0; i < point.length; i++) {
+                let op = document.createElement("option"),
+                    t = document.createTextNode("(" + point[i].x + ", " + point[i].y + ")");
+                op.appendChild(t);
+                e.appendChild(op);
+            }
+        };
+        var draw = function() {
+            for (a = 0; a < cordenadas.length; a++) {
+                let d = cordenadas[a];
+                if (true) {
+
+                    if (d.inicio.x <= x && d.fim.x >= x && d.inicio.y <= y && d.fim.y >= y) {
+                        createMap();
+                        _map[a].push({
+                            x: x,
+                            y: y
+                        });
+                        ctx.fillStyle = d.cor;
+                        ctx.fillRect(x, y, 1, 1);
+                    }
+
+                    if (d.inicio.x <= x && d.inicio.x >= x && d.fim.x < x && d.fim.x > x && d.fim.y >= y) {
+                        createMap();
+                        _map[a].push({
+                            x: x,
+                            y: y
+                        });
+                        ctx.fillStyle = d.cor;
+                        ctx.fillRect(x, y, 1, 1);
+                    }
+                }
+
+            }
+            if (x <= c.width)
+                x++;
+            if (x == c.width) {
+                x = 0;
+                y++;
+            }
+            if (limitedLoop == (c.width * c.height)) {
+
+                like();
+                createOptionElement(ini);
+                createOptionElement(fim);
+
+                clearInterval(setInt);
+            }
+            limitedLoop++;
+        }
+        setInt = setInterval(draw, 1);
+        ini.onclick = function() {
+            let c = this.value.replace(/\(|\)/g, '').split(',');
+            ctx.fillStyle = "black";
+            ctx.fillRect(c[0] - 1, c[1] - 1, 4, 4);
+        }
+        fim.onclick = function() {
+            let c = this.value.replace(/\(|\)/g, '').split(',');
+            ctx.fillStyle = "black";
+            ctx.fillRect(c[0] - 1, c[1] - 1, 4, 4);
+        }
+        var m = 0,
+            n = 0,
+            limitedLoopStart = 0;
+        var drawStart = function() {
+            /*let a = point[m];
+            if (n == a.length - 1) n = 0;
+            if (m < point.length) {
+                if (n < a.length) {
+                    let b = a[n];
+                    let c = ini.value.replace(/\(|\)/g, '').split(',');
+                    c[0] = parseFloat(c[0]);
+                    c[1] = parseFloat(c[1]);
+                    let d = fim.value.replace(/\(|\)/g, '').split(',');
+                    d[0] = parseFloat(d[0]);
+                    d[1] = parseFloat(d[1]);
+
+                    if (c[0] == b.x && c[1] == b.y) {
+                        console.log(c, d, b);
+                        // n = 0;
+                    }
+                    n++;
+                }
+                if (n == a.length - 1) m++;
+            }
+            */
+            if (limitedLoopStart == 1) {
+                clearInterval(clearDrawStart);
+            }
+            for (let i = 0; i < point.length; i++) {
+            	let a = point[i];
+            	let x1 = true, y1 = true;
+            	for (let j = 0; j < point.length; j++) {
+            		let b = point[j];
+            		if(a.y == b.y) {
+            			if(point[i].distancia == undefined) {
+            				point[i].distancia = new Array();
+            			}
+            			// console.log(point[i].distancia);
+            			if(i != j) {
+            				point[i].distancia[j] = b.x > a.x ? b.x - a.x : a.x - b.x;
+            			}
+            		}
+            	}
+            }
+            // debugger
+            graph = new Graph(point);
+            debugger
+        	console.log(graph.findShortestPath(1, 2));
+            limitedLoopStart++;
+        }
+        var clearDrawStart;
+        start.onclick = function() {
+            clearDrawStart = setInterval(drawStart, 1);
+        }
+    </script>
+</body>
+
+</html>
